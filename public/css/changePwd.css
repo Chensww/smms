@@ -1,0 +1,17 @@
+.el-form{
+    width: 300px;
+}
+.el-input__inner{
+    height: 30px;
+}
+.el-form-item__label{
+    font-size: 12px;
+    font-weight: bold;
+}
+.el-button{
+    padding: 6px 10px;
+}
+.el-button--primary{
+    background: url(../images/menu_bg.png);
+    border-color: transparent;
+}

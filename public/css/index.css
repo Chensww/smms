@@ -1,0 +1,148 @@
+.el-header, .el-footer {
+    color: #333;
+  }
+  .el-header{
+      margin-top: 30px;
+  }
+  .el-header p{
+      color: #555;
+      margin-top: 8px;
+      font-size: 14px;
+  }
+  .el-aside {
+    background: url(../images/left_bg.png);
+    color: #333;
+    text-align: center;
+  }
+  
+  .el-main {
+    color: #333;
+    text-align: center;
+  }
+  
+  body > .el-container {
+    margin-bottom: 40px;
+  }
+  *{
+      padding: 0;
+      margin: 0;
+  }
+  html,body,#app,.el-container{
+      height: 100%;
+  } 
+  .cell{
+      text-align: center;
+  }
+  /* 左侧 标题*/
+  .el-aside h1{
+    font-size: 22px;
+    margin-top: 30px;
+    color: #d1d0cf;
+  }
+  .el-aside .hello{
+    text-align: right;
+    padding-right: 10px;
+    margin-top: 30px;
+    font-size: 14px;
+    color: #888888;
+  }
+  .el-aside .hello span{
+    color: #d1d0cf;
+  }
+  .el-aside .state{
+    text-align: right;
+    padding-right: 10px;
+    margin-top: 10px;
+    color: #888888;
+  }
+  .el-aside .state a{
+    font-size: 14px;
+    color: #d1d0cf;
+    text-decoration: none;
+  }
+  .el-menu-vertical-demo,.el-submenu,.el-submenu__title,.el-menu-item,.el-menu--inline{
+      border: none;
+      background: transparent!important;
+  }
+  .el-menu-item{
+      color: #fff;
+      text-align: right;
+      padding-right: 10px!important;
+  }
+  .el-submenu{
+      line-height: 33px;
+      margin-top: 10px;
+      margin-left: 20px;
+     
+  }
+  .el-submenu__title{
+      height: 33px;
+      line-height: 33px;
+      background: url(../images/menu_bg.png) !important;
+      border-radius: 4px 0 0 4px;
+  }
+  .is-opened .el-submenu__title{
+      background: #fff !important;
+  }
+  .is-opened .el-submenu__title,.is-opened .el-submenu__title i{
+      color: #000 !important;
+  }
+  .el-submenu__title i{
+      color: #fff;
+  }
+  .el-submenu .el-menu-item {
+      min-width: 180px;
+      height: 33px;
+    line-height: 33px;
+  }
+  .el-menu--inline a{
+      display: inline-block;
+      height: 33px;
+      text-decoration: none;
+      color: #fff;
+  }
+  .el-menu--inline a:hover{
+    color: #ccc;
+}
+.el-menu--inline .is-active a{
+      color: #61a700 !important;
+  }
+  .el-menu--inline .is-active span{
+      /*小三角制作*/
+	border: 6px solid #fff;
+	border-color: transparent #fff transparent transparent;
+	position: absolute;
+	top:9px;
+	right: 0px;
+  }
+.el-menu-item:hover{
+    color: #ccc !important;
+}
+.box-card h4{
+    text-align: left;
+}
+.el-card__header{
+    padding:8px 16px;
+    background: #e9e9e9;
+}
+.el-alert--info{
+    margin: 10px 0;
+}
+.el-footer{
+    padding: 0;
+}
+.el-footer p{
+    text-align: left;
+    font-size: 12px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #ccc;
+}
+.addUserForm{
+    width: 300px;
+  }
+  input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0;
+}

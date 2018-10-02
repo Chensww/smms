@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- elementui.css -->
+    <link rel="stylesheet" href="./libs/css/elementui.css">
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="./css/index.css">
+    <!-- vue.js -->
+    <script src="./libs/js/vue.min.js"></script>
+    <!-- elementui.js -->
+    <script src="./libs/js/elementui.min.js"></script>
+    <script src="/users/checkIsLogin"></script>
+</head>
+<body>
+    <div id="app">
+        <el-container>
+            <!-- 右侧头部 -->
+            <el-header>
+                <h3>欢迎您 <span>{{username}}</span></h3>
+                <p>查看详细的系统信息。</p>
+            </el-header>
+            <!-- 右侧主体 -->
+            <el-main>
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <h4>系统信息</h4>
+                    </div>
+                    <div class="text item">
+
+                        <el-alert title="商品总数：" type="success" show-icon>
+                        </el-alert>
+                        <el-alert title="导入数据" type="info" :closable="false" show-icon>
+                        </el-alert>
+                        <!-- 两个表格 -->
+                        <el-row gutter="20">
+                            <!-- 左侧 -->
+                            <el-col :span="12">
+                                <div class="grid-content bg-purple">
+                                    <el-card class="box-card">
+                                        <div slot="header" class="clearfix">
+                                            <h4>销售排行</h4>
+                                        </div>
+                                        <!-- 表格 -->
+                                        <el-table :data="tableData" stripe style="width: 100%">
+                                            <el-table-column prop="goodsname" label="商品名称">
+                                            </el-table-column>
+                                            <el-table-column prop="sail" label="销量">
+                                            </el-table-column>
+                                        </el-table>
+                                    </el-card>
+                                </div>
+                            </el-col>
+                            <!-- 右侧 -->
+                            <el-col :span="12">
+                                <div class="grid-content bg-purple-light">
+                                    <el-card class="box-card">
+                                        <div slot="header" class="clearfix">
+                                            <h4>缺货的商品</h4>
+                                        </div>
+                                         <!-- 表格 -->
+                                         <el-table :data="tableData" stripe style="width: 100%">
+                                                <el-table-column prop="goodsname" label="商品名称">
+                                                </el-table-column>
+                                                <el-table-column prop="sail" label="库存">
+                                                </el-table-column>
+                                                <el-table-column prop="operation" label="操作">
+                                                    </el-table-column>
+                                            </el-table>
+                                    </el-card>
+                                </div>
+                            </el-col>
+                        </el-row>
+                    </div>
+                </el-card>
+                <!-- 右侧页脚 -->
+                <el-footer>
+                    <p>&copy; Copyright 2018 华联超市管理系统</p>
+                </el-footer>
+            </el-main>
+        </el-container>
+    </div>
+    <script>
+        //创建实例
+        new Vue({
+            el:"#app",
+            data() {
+      return {
+        tableData: [{
+          goodsname: '铁观音',
+          sail: 85
+        },{
+          goodsname: '巧乐兹',
+          sail: 84
+        },{
+          goodsname: '薯片',
+          sail: 83
+        },{
+          goodsname: '辣条',
+          sail: 82
+        },{
+          goodsname: '泡面',
+          sail: 81
+        },]
+      }
+    },
+     // vue实例创建完毕 没有挂载dom 适合准备数据(发送ajax 获取数据)
+     created() {
+                // 获取cookie中指定数据的函数
+                function getCookie(name) {
+                    var arr = document.cookie.split("; ");
+                    for (var i = 0; i < arr.length; i++) {
+                        var arr2 = arr[i].split("=");
+                        if (arr2[0] == name) {
+                            return arr2[1];
+                        }
+                    }
+                    return "";
+                }
+                // 获取用户名并且赋值给user
+                this.username = getCookie("username");
+
+            }
+        })
+        </script>
+</body>
+</html>

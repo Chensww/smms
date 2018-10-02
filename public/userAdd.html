@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- elementui.css -->
+    <link rel="stylesheet" href="./libs/css/elementui.css">
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="./css/userAdd.css">
+    <!-- query.js -->
+    <script src="./libs/jquery/jquery.js"></script>
+    <!-- vue.js -->
+    <script src="./libs/js/vue.min.js"></script>
+    <!-- elementui.js -->
+    <script src="./libs/js/elementui.min.js"></script>
+    <script src="/users/checkIsLogin"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 整体布局 -->
+        <el-container>
+            <el-container>
+                <!-- 右侧头部 -->
+                <el-header>
+                    <h3>欢迎您 <span>{{username}}</span></h3>
+                    <p>添加管理员账号。</p>
+                </el-header>
+                <!-- 右侧主体 -->
+                <el-main>
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <h4>添加管理员账号</h4>
+                        </div>
+                        <!-- 注册表单 -->
+                        <el-form :model="userAddForm" status-icon :rules="rules" ref="userAddForm" label-width="100px" class="demo-ruleForm">
+                            <el-form-item label="用户名：" prop="username">
+                              <el-input type="text" v-model="userAddForm.username" autocomplete="off"></el-input>
+                            </el-form-item>
+                            <el-form-item label="密&emsp;码：" prop="password">
+                              <el-input type="password" v-model="userAddForm.password" autocomplete="off"></el-input>
+                            </el-form-item>
+                            <el-form-item label="确认密码：" prop="cfpass">
+                              <el-input type="password" v-model.number="userAddForm.cfpass"></el-input>
+                            </el-form-item>
+                            <el-form-item label="选择用户组：" prop="groups">
+                                <el-select v-model="userAddForm.groups" placeholder="选择用户组">
+                                  <el-option label="管理员" value="管理员"></el-option>
+                                  <el-option label="超级管理员" value="超级管理员"></el-option>
+                                </el-select>
+                              </el-form-item>
+                            <el-form-item>
+                              <el-button type="primary" @click="submitForm('userAddForm')">添加</el-button>
+                              <el-button @click="resetForm('userAddForm')">重置</el-button>
+                            </el-form-item>
+                          </el-form>
+                    </el-card>
+                    <!-- 右侧页脚 -->
+                    <el-footer>
+                        <p>&copy; Copyright 2018 华联超市管理系统</p>
+                    </el-footer>
+                </el-main>
+            </el-container>
+        </el-container>
+    </div>
+    <script>
+        //创建实例
+    new Vue({
+      el: "#app",
+      data() {
+        //自定义规则函数
+        var cfpass = (rule, value, callback) => {
+          if (value != this.userAddForm.password) {
+            callback(new Error('两次输入密码不一致!'));
+          } else {
+            callback();
+          }
+        };
+        //自定义规则判断用户名是否注册过了
+         //自定义规则验证原始密码函数
+         var checkname =(rule, value, callback)=>{
+           let checkname = value;
+          //发送ajax获取原始密码
+        $.post('/users/checkname',{checkname},function(data){
+              if(!value){
+                callback(new Error(`请输入用户名`));
+              }else{
+                if (data.errcode===1) {
+                callback(new Error(`用户名已被注册了！`));
+              } else {
+                callback();
+              }
+              }
+            
+          })
+        };
+        return {
+          userAddForm: {
+            username: '',
+            password: '',
+            cfpass: ''
+          },
+          // 验证规则
+          rules: {
+            username: [{
+              validator: checkname,
+                required: true,
+                trigger: 'blur'
+              },
+              {
+                min: 6,
+                max: 16,
+                message: '长度在 6 到 16 个字符',
+                trigger: 'blur'
+              }
+            ],
+            password: [{
+                required: true,
+                message: '请输入密码',
+                trigger: 'blur'
+              },
+              {
+                min: 6,
+                max: 16,
+                message: '长度在 6 到 16 个字符',
+                trigger: 'blur'
+              }
+            ],
+            cfpass: [
+            {
+                required: true,
+                message:'请再次输入密码',
+                trigger: 'blur'
+              },
+            { validator: cfpass, trigger: 'blur' }
+          ],
+          groups: [
+            { required: true, message: '请选择用户组', trigger: 'change' }
+          ]
+          }
+        };
+      },
+      // vue实例创建完毕 没有挂载dom 适合准备数据(发送ajax 获取数据)
+      created() {
+                // 获取cookie中指定数据的函数
+                function getCookie(name) {
+                    var arr = document.cookie.split("; ");
+                    for (var i = 0; i < arr.length; i++) {
+                        var arr2 = arr[i].split("=");
+                        if (arr2[0] == name) {
+                            return arr2[1];
+                        }
+                    }
+                    return "";
+                }
+                // 获取用户名并且赋值给user
+                this.username = getCookie("username");
+
+            },
+      methods: {
+        submitForm(formName) {
+          this.$refs[formName].validate((valid) => {
+            //保留this
+            var _this=this;
+            if (valid) {
+              
+              //前端验证成功，然后发送ajax请求给后端
+              // 定义参数对象
+              const params = {
+                                "username": this.userAddForm.username,
+                                "password": this.userAddForm.password,
+                                "groups": this.userAddForm.groups
+                            }
+               // 构造ajax 把数据发送个后端
+              $.post('/users/userAdd',params,function(data){
+                //如果返回的成功弹出对应的信息
+                if(data.errcode===0){
+                  //成功提示
+                _this.$message({
+                  type: 'success',
+                  message: data.msg
+                });
+                  // 》》跳 转到用户账号列表页面
+                  setTimeout(() => {
+                    location.href = "./userList.html";
+                  }, 1000);
+                }else{//如果返回的失败弹出对应的信息
+                  alert(data.msg);
+                }
+              })
+            } else {
+              console.log('error submit!!'); //失败提示
+              return false;
+            }
+          });
+        },
+        //重置表单
+        resetForm(formName) {
+          this.$refs[formName].resetFields();
+        }
+      }
+    })
+    </script>
+</body>
+
+</html>

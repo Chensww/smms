@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>超市进销系统-添加商品</title>
+
+    <!-- 引入elementui.css -->
+    <link rel="stylesheet" href="./libs/css/elementui.css">
+    <!-- 导入自定义样式 -->
+    <link rel="stylesheet" href="./css/index.css">
+    <!-- 引入jQuery -->
+    <script src="./libs/jquery/jquery.js"></script>
+    <!-- 引入vue.js -->
+    <script src="./libs/js/vue.min.js"></script>
+    <!-- 引入elementui.js -->
+    <script src="./libs/js/elementui.min.js"></script>
+    <!-- 发送ajax请求检查是否登陆 -->
+    <script src="/users/checkIsLogin"></script>
+</head>
+
+<body>
+    <div id="app">
+            <!-- 右侧 -->
+            <el-container>
+                <el-header>
+                    <!-- 头部 -->
+                    <h2>欢迎您 {{user}}</h2>
+                    <p>修改相同产品信息</p>
+                </el-header>
+                <el-main>
+                    <!-- 主要内容 -->
+                    <el-card class="box-card">
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                <h4>修改相同产品信息</h4>
+                            </div>
+                        <!-- 添加账号表单 -->
+                       <!-- 添加账号表单 -->
+                       <el-form :model="editGoodsFrom" status-icon :rules="rules" ref="editGoodsFrom" label-width="100px"
+                       class="demo-ruleForm addUserForm">
+                       <!-- 商品名称 -->
+                       <el-form-item label="商品名称" prop="goodsName">
+                           <el-input v-model="editGoodsFrom.goodsName" autocomplete="off"></el-input>
+                       </el-form-item>
+                       <!-- 售价 -->
+                       <el-form-item label="售&emsp;价" prop="price">
+                        <el-input type="number" @change="editGoodsFrom.marketPrice = (editGoodsFrom.price*1.2).toFixed(2);editGoodsFrom.purchasePrice=(editGoodsFrom.price*0.5).toFixed(2)" type="price" v-model="editGoodsFrom.price" autocomplete="off"></el-input>
+                       </el-form-item>
+                       <!-- 市场价 -->
+                       <el-form-item label="市场价" prop="marketPrice">
+                           <el-input type="number" v-model="editGoodsFrom.marketPrice">111</el-input>
+                           <span class="desc">默认市场价格为售价的1.2倍</span>
+                       </el-form-item>
+                       
+                       <!-- 商品进价 -->
+                       <el-form-item label="商品进价" prop="purchasePrice">
+                           <el-input type="number"  v-model="editGoodsFrom.purchasePrice"></el-input>
+                           <span class="desc">默认商品进价为售价的0.5倍</span>
+                       </el-form-item>
+                       <!-- 商品重量 -->
+                       <el-form-item label="商品重量" prop="googsWeight">
+                           <el-input type="number" v-model="editGoodsFrom.googsWeight"></el-input>
+                       </el-form-item>
+                       <!-- 商品单位 -->
+                       <el-form-item label="商品单位" prop="goodsUnit">
+                        <el-select v-model="editGoodsFrom.goodsUnit" placeholder="单位">
+                          <el-option label="件" value="件"></el-option>
+                          <el-option label="斤" value="斤"></el-option>
+                          <el-option label="个" value="个"></el-option>
+                          <el-option label="包" value="包"></el-option>
+                        </el-select>
+                      </el-form-item>
+                       <!-- 会员优惠 -->
+                       <el-form-item label="会员优惠" prop="vipDiscount">
+                           <el-radio-group v-model="editGoodsFrom.vipDiscount">
+                             <el-radio label="享受"></el-radio>
+                             <el-radio label="不享受"></el-radio>
+                           </el-radio-group>
+                         </el-form-item>
+                         <!-- 是否促销 -->
+                       <el-form-item label="是否促销" prop="isOnsale">
+                           <el-radio-group v-model="editGoodsFrom.isOnsale">
+                             <el-radio label="启用"></el-radio>
+                             <el-radio label="禁用"></el-radio>
+                           </el-radio-group>
+                         </el-form-item>
+                       <!-- 商品描述 -->
+                       <el-form-item label="商品描述" prop="desc">
+                           <el-input rows="5" type="textarea" v-model="editGoodsFrom.desc"></el-input>
+                           <span class="desc">不超过200字</span>
+                       </el-form-item>
+
+                       <el-form-item>
+                           <el-button type="primary" @click="submitForm('editGoodsFrom')">保存</el-button>
+                           <el-button @click="resetForm('editGoodsFrom')">重置</el-button>
+                       </el-form-item>
+                   </el-form>
+                    </el-card>
+                    <!-- 右侧页脚 -->
+                <el-footer>
+                    <p>&copy; Copyright 2018 华联超市管理系统</p>
+                </el-footer>
+                </el-main>
+        </el-container>
+    </div>
+    <script>
+        
+        new Vue({
+            el: "#app",
+            data() {
+                return {
+                    //表单需要的数据源
+                    editGoodsFrom: {
+                        goodsName: '',
+                        price: '',
+                        marketPrice:"",
+                        purchasePrice:"",
+                        googsWeight:"",
+                        goodsUnit:"",
+                        vipDiscount:"享受",
+                        isOnsale:"禁用",
+                        desc:"",
+                    },
+                    // 验证规则
+                    rules: {
+                        goodsName: [{
+                                required: true,
+                                message: '请输入商品名称',
+                                trigger: 'blur'
+                            }//非空验证
+                        ],
+                        price: [{
+                                required: true,
+                                message: '请输入价格',
+                                trigger: 'blur'
+                            } // 非空验证
+                        ]
+                    }
+                };
+            },
+            methods: {
+                submitForm(formName) {
+          //保存this
+          var _this=this;
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              
+              //前端验证成功，然后发送ajax请求给后端
+              // 定义参数对象
+              const params = {
+                                "goodsName": this.editGoodsFrom.goodsName,
+                                "price": this.editGoodsFrom.price,
+                                "marketPrice": this.editGoodsFrom.marketPrice,
+                                "purchasePrice": this.editGoodsFrom.purchasePrice,
+                                "googsWeight": this.editGoodsFrom.googsWeight,
+                                "goodsUnit": this.editGoodsFrom.goodsUnit,
+                                "vipDiscount": this.editGoodsFrom.vipDiscount,
+                                "isOnsale": this.editGoodsFrom.isOnsale,
+                                "description": this.editGoodsFrom.desc,
+                                "id":location.href.split('=')[1],
+                                "instockNum":this.editGoodsFrom.instockNum
+                            }
+               // 发送ajax 把修改后的新数据 和 一个原来的id 一起发送给后端
+              $.post('/goods/goodssave',params,function(data){
+                //如果返回的成功弹出对应的信息
+                if(data.errcode===0){
+                   //成功提示
+                _this.$message({
+                  type: 'success',
+                  message: data.msg
+                });
+                  // 》》跳 转到用户账号列表页面
+                  setTimeout(() => {
+                    location.href = "./goodsList.html";
+                  }, 1000);
+                }else{//如果返回的失败弹出对应的信息
+                  alert(data.msg);
+                }
+              })
+            } else {
+              console.log('error submit!!'); //失败提示
+              return false;
+            }
+          });
+        },
+                resetForm(formName) {
+                    //重置表单
+                    this.$refs[formName].resetFields();
+                }
+            },
+            // 生命周期钩子函数(创建vue实例后，还未挂载dom)
+            created() {
+                // 保存this
+        var _this=this;
+        //获取传来的id
+        let id =location.href.split('=')[1];
+            $.get(`./goods/editgoods?id=${id}`,function(data){
+              //console.log(data);
+              _this.editGoodsFrom.goodsName=data[0].goodsName;
+              _this.editGoodsFrom.price=data[0].price;
+              _this.editGoodsFrom.marketPrice=data[0].marketPrice;
+              _this.editGoodsFrom.purchasePrice=data[0].purchasePrice;
+              _this.editGoodsFrom.googsWeight=data[0].googsWeight;
+              _this.editGoodsFrom.goodsUnit=data[0].goodsUnit;
+              _this.editGoodsFrom.vipDiscount=data[0].vipDiscount;
+              _this.editGoodsFrom.isOnsale=data[0].isOnsale;
+              _this.editGoodsFrom.desc=data[0].description;
+              _this.editGoodsFrom.instockNum=data[0].instockNum;
+            });
+                // 获取cookie中指定数据的函数
+                function getCookie(name) {
+                    var arr = document.cookie.split("; ");
+                    for (var i = 0; i < arr.length; i++) {
+                        var arr2 = arr[i].split("=");
+                        if (arr2[0] == name) {
+                            return arr2[1];
+                        }
+                    }
+                    return "";
+                }
+                // 获取用户名并且赋值给user
+                this.user = getCookie("username");                
+            }
+
+        });
+
+        //控制F5刷新只刷新iframe框架
+        $("body").bind("keydown",function(event){
+            if(event.keyCode == 116) {
+                event.preventDefault(); //阻止默认刷新
+                //location.reload(); //采用location.reload()在火狐下可能会有问题，火狐会保留上一次链接
+                location=location;
+            }
+        });
+
+    </script>
+</body>
+
+</html>

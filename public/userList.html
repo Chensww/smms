@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>华联超市管理系统</title>
+  <!-- elementui.css -->
+  <link rel="stylesheet" href="./libs/css/elementui.css">
+  <!-- 自定义样式 -->
+  <link rel="stylesheet" href="./css/index.css">
+  <link rel="stylesheet" href="./css/userList.css">
+  <!-- jquery.js -->
+  <script src="./libs/jquery/jquery.js"></script>
+  <!-- moment.js -->
+  <script src="./libs/moment/moment.js"></script>
+  <!-- vue.js -->
+  <script src="./libs/js/vue.min.js"></script>
+  <!-- elementui.js -->
+  <script src="./libs/js/elementui.min.js"></script>
+  <script src="/users/checkIsLogin"></script>
+</head>
+
+<body>
+  <div id="app">
+    <!-- 整体布局 -->
+    <el-container>
+      <el-container>
+        <!-- 右侧头部 -->
+        <el-header>
+          <h3>欢迎您 <span>{{username}}</span></h3>
+          <p>查看所有管理员账号。</p>
+        </el-header>
+        <!-- 右侧主体 -->
+        <el-main>
+          <el-card class="box-card">
+            <div slot="header" class="clearfix">
+              <h4>账号管理</h4>
+            </div>
+            <!-- 用户列表表格 -->
+            <el-table ref="multipleTable" :data="tableData" stripe tooltip-effect="dark" style="width: 100%"
+              @selection-change="handleSelectionChange">
+              <!-- 选择框 -->
+              <el-table-column type="selection" width="55">
+              </el-table-column>
+              <!-- 用户名 -->
+              <el-table-column prop="username" label="用户名">
+              </el-table-column>
+              <!-- 用户组别 -->
+              <el-table-column prop="groups" label="用户组别" show-overflow-tooltip>
+              </el-table-column>
+              <!-- 日期 -->
+              <el-table-column label="日期">
+                <template slot-scope="scope">{{ scope.row.ctime | formatCtime }}</template>
+              </el-table-column>
+              <!-- 操作 -->
+              <el-table-column label="操作">
+                <template slot-scope="scope">
+                  <el-button size="mini" type="primary" @click="handleEdit(scope.row.id)">
+                    <i class="el-icon-edit"></i>
+                    修改
+                  </el-button>
+                  <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">
+                    <i class="el-icon-delete"></i>
+                    删除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <!-- 分页 -->
+            <div class="block" style="margin-top: 20px; text-align: left">
+              <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="currentPage"
+                :page-sizes="[5, 8,10, 15, 20]"
+                :page-size="pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="totalcount">
+              </el-pagination>
+            </div>
+            <div id="batch" style="margin-top: 20px; text-align: left">
+              <el-button @click="batchesDel()">批量删除</el-button>
+              <el-button @click="deselectall()">取消选择</el-button>
+            </div>
+          </el-card>
+          <!-- 右侧页脚 -->
+          <el-footer>
+            <p>&copy; Copyright 2018 华联超市管理系统</p>
+          </el-footer>
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
+  <script>
+    
+    //创建实例
+    new Vue({
+      el: "#app",
+      data() {
+        return {
+          // 表格数据
+          tableData: [],
+          multipleSelection: [],
+          currentPage: 1,
+          pageSize:8,
+          totalcount:30
+        }
+      },
+      // vue实例创建完毕 没有挂载dom 适合准备数据(发送ajax 获取数据)
+      created() {
+        // 调用一次请求所有数据的方法
+        this.getAllUsers();
+// vue实例创建完毕 没有挂载dom 适合准备数据(发送ajax 获取数据)
+                // 获取cookie中指定数据的函数
+                function getCookie(name) {
+                    var arr = document.cookie.split("; ");
+                    for (var i = 0; i < arr.length; i++) {
+                        var arr2 = arr[i].split("=");
+                        if (arr2[0] == name) {
+                            return arr2[1];
+                        }
+                    }
+                    return "";
+                }
+                // 获取用户名并且赋值给user
+                this.username = getCookie("username"); 
+      },
+      methods: {
+        //请求所有数据的方法
+        getAllUsers() {
+          // 保留this 让他指向vue实例
+          var _this = this;
+          // 保存参数，发送给后端
+          let params = {
+            pageSize:this.pageSize,
+            currentPage:this.currentPage
+          }
+          // 发送ajax请求 请求所有用户数据
+          $.get('/users/userList',params, function (data) {
+          if(data.pagedata.length==0){
+            //解决删除最后1页的bug（有数据显示暂无数据）
+              if(_this.currentPage>1){
+                _this.currentPage-=1;
+                _this.getAllUsers();
+              }else if(data.totalcount===0){//当查询到totalcount为0的时候隐藏批量和分页
+                $("#batch").hide();
+                $(".block").hide();
+              }
+            _this.tableData = data.pagedata;
+            _this.totalcount= data.totalcount;
+          }else{
+              _this.totalcount= data.totalcount;
+              _this.tableData = data.pagedata;
+            }
+             
+            
+          })
+        },
+        handleOpen(key, keyPath) {
+          console.log(key, keyPath);
+        },
+        handleClose(key, keyPath) {
+          console.log(key, keyPath);
+        },
+        toggleSelection(rows) {
+          if (rows) {
+            rows.forEach(row => {
+              this.$refs.multipleTable.toggleRowSelection(row);
+            });
+          } else {
+            this.$refs.multipleTable.clearSelection();
+          }
+        },
+        handleSelectionChange(val) {
+          this.multipleSelection = val;
+        },
+        // 删除弹出确认
+        handleDelete(id) {
+          this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            // 保留this 让他指向vue实例
+            var _this = this;
+            //点击确定发送ajax单条删除给后端
+            $.get(`/users/userDeleteone?id=${id}`, function (data) {
+              // 判断 如果删除成功 弹出删除成功 刷新页面
+              if (data.errcode === 0) {
+                // 弹出删除成功
+                //console.log(data.msg);
+                // 刷新页面 ？怎么刷
+                _this.getAllUsers();
+                _this.$message({
+                  type: 'success',
+                  message: data.msg
+                });
+
+              } else {
+                // 否则 弹出删除失败信息 
+                //console.log(data.msg);
+                _this.$message({
+                  type: 'error',
+                  message: data.msg
+                });
+              }
+            });
+            //console.log(this);
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
+          });
+        },
+        //修改
+        handleEdit(id) {
+          location.href = `./useredit.html?id=${id}`;
+          //发送ajax给后端
+        },
+        //批量删除
+        batchesDel() {
+          // 从勾选的数据里面 把id获取出来
+          let idArr = this.multipleSelection.map(v => v.id);
+          //判断是否勾选
+          if(!idArr.length){
+            this.$message({
+              type: 'info',
+              message: '请至少勾选一条数据'
+            });
+            return false;
+          }
+          this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+          //保存this
+          var _this=this;
+          // 发送ajax 把这些id发送给后端
+          $.post('/users/batchesdel', {"idArr": idArr}, function (data) {
+            if(data.errcode===0){
+              //成功提示
+                _this.$message({
+                  type: 'success',
+                  message: data.msg
+                });
+                // 刷新页面 
+                _this.getAllUsers();
+            }else{
+              //失败提示
+              _this.$message({
+                  type: 'error',
+                  message: data.msg
+                });
+            }
+          })
+           //console.log(this);
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
+          });
+        },
+        //取消选择
+        deselectall(rows) {
+          this.$refs.multipleTable.clearSelection();
+
+        },
+        handleSelectionChange(val) {
+          this.multipleSelection = val;
+        },
+        //分页
+        handleSizeChange(val) {
+          // 当页面尺寸（每页显示多少条）发生改变触发
+        this.pageSize = val;
+        this.getAllUsers();
+      },
+      handleCurrentChange(val) {
+        //当前在多少页
+        this.currentPage =val;
+        this.getAllUsers();
+      }
+      },
+      // 过滤器
+      filters: {
+        // 过滤时间 m,;l mlm l
+        formatCtime(value) {
+          return moment(value).format("YYYY-MM-DD HH:mm:ss");
+        }
+      },
+    })
+  </script>
+</body>
+
+</html>

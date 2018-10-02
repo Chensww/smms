@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>超市进销系统-添加商品</title>
+    <!-- 引入elementui.css -->
+    <link rel="stylesheet" href="./libs/css/elementui.css">
+    <!-- 导入自定义样式 -->
+    <link rel="stylesheet" href="./css/index.css">
+    <!-- 引入jQuery -->
+    <script src="./libs/jquery/jquery.js"></script>
+    <!-- 引入vue.js -->
+    <script src="./libs/js/vue.min.js"></script>
+    <!-- 引入elementui.js -->
+    <script src="./libs/js/elementui.min.js"></script>
+    <!-- 发送ajax请求检查是否登陆 -->
+    <script src="/users/checkIsLogin"></script>
+</head>
+
+<body>
+    <div id="app">
+            <!-- 右侧 -->
+            <el-container>
+                <el-header>
+                    <!-- 头部 -->
+                    <h2>欢迎您 {{user}}</h2>
+                    <p>添加商品</p>
+                </el-header>
+                <el-main>
+                    <!-- 主要内容 -->
+                    <el-card class="box-card">
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                <h4>添加商品</h4>
+                            </div>
+                        <!-- 添加账号表单 -->
+                       <!-- 添加账号表单 -->
+                       <el-form :model="addGoodsFrom" status-icon :rules="rules" ref="addGoodsFrom" label-width="100px"
+                       class="demo-ruleForm addUserForm">
+                       <!-- 下拉选择组件 -->
+                       <el-form-item label="选择分类" prop="type">
+                           <el-select v-model="addGoodsFrom.type" placeholder="请选择用户组">
+                               <el-option label="食品类" value="食品类"></el-option>
+                               <el-option label="酒水类" value="酒水类"></el-option>
+                               <el-option label="日用品类" value="日用品类"></el-option>
+                               <el-option label="服装类" value="服装类"></el-option>
+                           </el-select>
+                       </el-form-item>
+                       <!-- 商品条形码 -->
+                       <el-form-item label="商品条形码" prop="barcode">
+                           <el-input v-model="addGoodsFrom.barcode" autocomplete="off"></el-input>
+                           <span style="font-size:12px;" class="desc">若条形码相同代表同一产品，并自动回填数据且只能修改入库数量</span>
+                       </el-form-item>
+                       <!-- 商品名称 -->
+                       <el-form-item label="商品名称" prop="goodsName">
+                           <el-input v-model="addGoodsFrom.goodsName" autocomplete="off"></el-input>
+                       </el-form-item>
+                       <!-- 售价 -->
+                       <el-form-item label="售&emsp;价" prop="price">
+                           <el-input type="number" :disabled="flag" @change="addGoodsFrom.marketPrice = (addGoodsFrom.price*1.2).toFixed(2);addGoodsFrom.purchasePrice=(addGoodsFrom.price*0.5).toFixed(2)" type="price" v-model="addGoodsFrom.price" autocomplete="off"></el-input>
+                       </el-form-item>
+                       <!-- 市场价 -->
+                       <el-form-item label="市场价" prop="marketPrice">
+                           <el-input type="number" :disabled="flag" v-model="addGoodsFrom.marketPrice">111</el-input>
+                           <span class="desc">默认市场价格为售价的1.2倍</span>
+                       </el-form-item>
+                       
+                       <!-- 商品进价 -->
+                       <el-form-item label="商品进价" prop="purchasePrice">
+                           <el-input type="number" :disabled="flag" v-model="addGoodsFrom.purchasePrice"></el-input>
+                           <span class="desc">默认商品进价为售价的0.5倍</span>
+                       </el-form-item>
+                       <!-- 入库数量 -->
+                       <el-form-item label="入库数量" prop="instockNum">
+                           <el-input type="number" v-model="addGoodsFrom.instockNum"></el-input>
+                       </el-form-item>
+                       <!-- 商品重量 -->
+                       <el-form-item label="商品重量" prop="googsWeight">
+                           <el-input type="number" :disabled="flag" v-model="addGoodsFrom.googsWeight"></el-input>
+                       </el-form-item>
+                       <!-- 商品单位 -->
+                       <el-form-item label="商品单位" prop="goodsUnit">
+                        <el-select :disabled="flag" v-model="addGoodsFrom.goodsUnit" placeholder="单位">
+                          <el-option label="件" value="件"></el-option>
+                          <el-option label="斤" value="斤"></el-option>
+                          <el-option label="个" value="个"></el-option>
+                          <el-option label="包" value="包"></el-option>
+                          <el-option label="箱" value="箱"></el-option>
+                          <el-option label="瓶" value="瓶"></el-option>
+                        </el-select>
+                      </el-form-item>
+                       <!-- 会员优惠 -->
+                       <el-form-item  label="会员优惠" prop="vipDiscount">
+                           <el-radio-group :disabled="flag" v-model="addGoodsFrom.vipDiscount">
+                             <el-radio label="享受"></el-radio>
+                             <el-radio label="不享受"></el-radio>
+                           </el-radio-group>
+                         </el-form-item>
+                         <!-- 是否促销 -->
+                       <el-form-item label="是否促销" prop="isOnsale">
+                           <el-radio-group :disabled="flag" v-model="addGoodsFrom.isOnsale">
+                             <el-radio label="启用"></el-radio>
+                             <el-radio label="禁用"></el-radio>
+                           </el-radio-group>
+                         </el-form-item>
+                       <!-- 商品描述 -->
+                       <el-form-item label="商品描述" prop="desc">
+                           <el-input :disabled="flag" rows="5" type="textarea" v-model="addGoodsFrom.desc"></el-input>
+                           <span class="desc">不超过200字</span>
+                       </el-form-item>
+
+                       <el-form-item>
+                           <el-button type="primary" @click="submitForm('addGoodsFrom')">添加</el-button>
+                           <el-button @click="resetForm('addGoodsFrom')">重置</el-button>
+                       </el-form-item>
+                   </el-form>
+                    </el-card>
+                    <!-- 右侧页脚 -->
+                <el-footer>
+                    <p>&copy; Copyright 2018 华联超市管理系统</p>
+                </el-footer>
+                </el-main>
+        </el-container>
+    </div>
+    <script>
+        
+        new Vue({
+            el: "#app",
+            data() {
+                //自定义规则判断条形码是否已添加了
+         //自定义规则验证条形码函数
+         var checkbarcode =(rule, value, callback)=>{
+           let checkbarcode = value;
+           var _this=this;
+           //input改为可输入
+           this.flag =false;
+          //发送ajax获取条形码
+        $.post('/goods/checkbarcode',{checkbarcode},function(data){
+              if(!value){
+                callback(new Error(`请输入商品条形码`));
+              }else{
+                if (data.length) {
+                   _this.addGoodsFrom.price =data[0].price;
+                   _this.addGoodsFrom.type =data[0].type;
+                   _this.addGoodsFrom.marketPrice =data[0].marketPrice;
+                   _this.addGoodsFrom.purchasePrice =data[0].purchasePrice;
+                   _this.addGoodsFrom.googsWeight =data[0].googsWeight;
+                   _this.addGoodsFrom.goodsUnit =data[0].goodsUnit;
+                   _this.addGoodsFrom.vipDiscount =data[0].vipDiscount;
+                   _this.addGoodsFrom.isOnsale =data[0].isOnsale;
+                   _this.addGoodsFrom.desc =data[0].description;
+                   _this.addGoodsFrom.goodsName =data[0].goodsName;
+                   _this.flag=true;
+                   callback();
+              } else {
+                callback();
+              }
+              }
+            
+          })
+        };
+                return {
+                    flag:false,
+                    //表单需要的数据源
+                    addGoodsFrom: {
+                        
+                        barcode: '',
+                        goodsName: '',
+                        price: '',
+                        marketPrice:"",
+                        purchasePrice:"",
+                        instockNum:"",
+                        googsWeight:"",
+                        goodsUnit:"",
+                        vipDiscount:"享受",
+                        isOnsale:"禁用",
+                        desc:"",
+                        type:''
+                    },
+                    // 验证规则
+                    rules: {
+                        barcode: [{
+                                required: true,
+                                validator: checkbarcode,
+                                trigger: 'blur'
+                            }//非空验证
+                        ],
+                        goodsName: [{
+                                required: true,
+                                message: '请输入商品名称',
+                            }//非空验证
+                        ],
+                        price: [{
+                                required: !this.flag,
+                                message: '请输入价格',
+                            } // 非空验证
+                        ],
+                        type:[
+                            {
+                                required: true,
+                                message: '请选择用户组',
+                                trigger: 'change'
+                            }, // 非空验证
+                        ],
+                        instockNum: [{
+                                required: true,
+                                message: '请输入数量',
+                                trigger: 'blur'
+                            } // 非空验证
+                        ]
+                    }
+                };
+            },
+            methods: {
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) { //判断验证结果
+                            // 保留this
+                            let _this = this;
+                            let params ={
+                                barcode: this.addGoodsFrom.barcode,
+                                goodsName: this.addGoodsFrom.goodsName,
+                                price: this.addGoodsFrom.price,
+                                marketPrice:this.addGoodsFrom.marketPrice,
+                                purchasePrice:this.addGoodsFrom.purchasePrice,
+                                instockNum:this.addGoodsFrom.instockNum,
+                                googsWeight:this.addGoodsFrom.googsWeight,
+                                goodsUnit:this.addGoodsFrom.goodsUnit,
+                                vipDiscount:this.addGoodsFrom.vipDiscount,
+                                isOnsale:this.addGoodsFrom.isOnsale,
+                                desc:this.addGoodsFrom.desc,
+                                type:this.addGoodsFrom.type
+                            }
+                            // 发送ajax请求
+                            $.post('goods/addgoods',params,function (data) {
+                               if (data.status === 1) {
+                                   //添加成功提示
+                                    _this.$message({
+                                        message: data.msg,
+                                        type: 'success'
+                                    });
+                                    setTimeout(()=>{// 页面跳转到商品列表
+                                        location.href = "./goodsList.html";
+                                    },1000);
+                               } else {
+                                    //登录失败提示    
+                                    _this.$message.error(data.msg);
+                               }
+                                
+                            });
+                           
+                        } else {
+                            // console.log('error submit!!');
+                            //验证失败阻止表单提交
+                            return false;
+                        }
+                    });
+                },
+                resetForm(formName) {
+                    //重置表单
+                    this.$refs[formName].resetFields();
+                }
+            },
+            // 生命周期钩子函数(创建vue实例后，还未挂载dom)
+            created() {
+                // 获取cookie中指定数据的函数
+                function getCookie(name) {
+                    var arr = document.cookie.split("; ");
+                    for (var i = 0; i < arr.length; i++) {
+                        var arr2 = arr[i].split("=");
+                        if (arr2[0] == name) {
+                            return arr2[1];
+                        }
+                    }
+                    return "";
+                }
+                // 获取用户名并且赋值给user
+                this.user = getCookie("username");                
+            }
+
+        });
+
+        //控制F5刷新只刷新iframe框架
+        $("body").bind("keydown",function(event){
+            if(event.keyCode == 116) {
+                event.preventDefault(); //阻止默认刷新
+                //location.reload(); //采用location.reload()在火狐下可能会有问题，火狐会保留上一次链接
+                location=location;
+            }
+        });
+
+    </script>
+</body>
+
+</html>

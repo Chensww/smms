@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>华联超市管理系统</title>
+    <!-- elementui.css -->
+    <link rel="stylesheet" href="./libs/css/elementui.css">
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="./css/index.css">
+    <!-- vue.js -->
+    <script src="./libs/js/vue.min.js"></script>
+    <!-- elementui.js -->
+    <script src="./libs/js/elementui.min.js"></script>
+    <script src="/users/checkIsLogin"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 整体布局 -->
+        <el-container>
+            <!-- 左侧菜单 -->
+            <el-aside width="200px">
+                <h1>华联超市管理系统</h1>
+                <p class='hello'>您好，<span>{{username}}</span></p>
+                <p class="state"> <a href="#">管理首页</a> | <a href="/users/logout">退出系统</a></p>
+                <!-- 导航菜单 -->
+                <el-menu :unique-opened="true" :default-openeds="['5']" :default-active="'5-1'" class="el-menu-vertical-demo"
+                    text-color="#fff">
+                    <el-submenu index="1">
+                        <template slot="title">
+                            <i class="el-icon-edit"></i>
+                            <span>账号管理</span>
+                        </template>
+                        <el-menu-item index="1-1"><a href="./userAdd.html" target="contentWarp">添加账号</a><span></span></el-menu-item>
+                        <el-menu-item index="1-2"><a href="./userList.html" target="contentWarp">账号列表</a><span></span></el-menu-item>
+                        <el-menu-item index="1-3"><a href="./changePwd.html" target="contentWarp">密码修改</a><span></span></el-menu-item>
+                    </el-submenu>
+                    <el-submenu index="2">
+                        <template slot="title">
+                            <i class="el-icon-goods"></i>
+                            <span>商品管理</span>
+                        </template>
+                        <el-menu-item index="2-1"><a href="./addGoods.html" target="contentWarp">添加商品</a><span></span></el-menu-item>
+                        <el-menu-item index="2-2"><a href="./goodsList.html" target="contentWarp">商品列表</a><span></span></el-menu-item>
+                    </el-submenu>
+                    <el-submenu index="3">
+                        <template slot="title">
+                            <i class="el-icon-tickets"></i>
+                            <span>进货管理</span>
+                        </template>
+                        <el-menu-item index="3-1">添加库存<span></span></el-menu-item>
+                        <el-menu-item index="3-2">库存列表<span></span></el-menu-item>
+                    </el-submenu>
+
+                    <el-submenu index="4">
+                        <template slot="title">
+                            <i class="el-icon-sold-out"></i>
+                            <span>出货管理</span>
+                        </template>
+                        <el-menu-item index="4-1">销售列表<span></span></el-menu-item>
+                        <el-menu-item index="4-2">商品出库<span></span></el-menu-item>
+                        <el-menu-item index="4-3">商品退货<span></span></el-menu-item>
+                    </el-submenu>
+
+                    <el-submenu index="5">
+                        <template slot="title">
+                            <i class="el-icon-warning"></i>
+                            <span>系统管理</span>
+                        </template>
+                        <el-menu-item index="5-1"><a href="./index.html">系统信息</a> <span></span></el-menu-item>
+                    </el-submenu>
+                </el-menu>
+            </el-aside>
+            <!-- 右侧主体 -->
+            <iframe name="contentWarp" src="main.html" width="100%" height="100%" scrolling="yes" frameborder="0">
+            </iframe>
+
+        </el-container>
+    </div>
+    <script>
+        //创建实例
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    tableData: [{
+                        goodsname: '铁观音',
+                        sail: 85
+                    }, {
+                        goodsname: '巧乐兹',
+                        sail: 84
+                    }, {
+                        goodsname: '薯片',
+                        sail: 83
+                    }, {
+                        goodsname: '辣条',
+                        sail: 82
+                    }, {
+                        goodsname: '泡面',
+                        sail: 81
+                    }, ]
+                }
+            },
+            // vue实例创建完毕 没有挂载dom 适合准备数据(发送ajax 获取数据)
+            created() {
+                // 获取cookie中指定数据的函数
+                function getCookie(name) {
+                    var arr = document.cookie.split("; ");
+                    for (var i = 0; i < arr.length; i++) {
+                        var arr2 = arr[i].split("=");
+                        if (arr2[0] == name) {
+                            return arr2[1];
+                        }
+                    }
+                    return "";
+                }
+                // 获取用户名并且赋值给user
+                this.username = getCookie("username");
+
+            }
+        })
+    </script>
+</body>
+
+</html>

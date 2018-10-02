@@ -1,0 +1,27 @@
+html,body{
+    padding: 0;
+    margin: 0;
+    height: 100%;
+}
+#app{
+    height: 100%;
+    position: relative;
+    background-image: url(../images/body_bg.png);
+}
+.el-form{
+    width: 400px;
+    height: 320px;
+    padding-right: 30px;
+    border-radius: 6px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    background: #fff;
+}
+.el-form .title{
+    padding-left: 20px;
+    padding-top: 30px;
+}
